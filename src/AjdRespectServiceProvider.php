@@ -32,6 +32,11 @@ class AjdRespectServiceProvider extends Validation_provider
 			->tryGetRespectRules();
 	}
 
+	/**
+     * Try and registers and create adapter for all the rules -> exceptions for repect validation.
+     *
+     * @return self
+     */
 	protected function tryGetRespectRules()
 	{
 		$baseRepectDir = dirname(__DIR__).self::DS.'vendor'.self::DS.'respect'.self::DS.'validation'.self::DS.'library'.self::DS;
@@ -57,11 +62,27 @@ class AjdRespectServiceProvider extends Validation_provider
         return $this;
 	}
 
+	/**
+     * Remove .php extension of filename.
+     *
+     * @param  string  $filename
+     * @return string
+     */
 	protected function createClass($filename)
 	{
 		return substr($filename, 0, -4);
 	}
 
+	/**
+     * Create mapping or register respect validation rules as anonymous class for ajd validation.
+     *
+     * @param  array  $rules
+     * @param  array  $exceptions
+     * @param  string  $rulesDir
+     * @param  string  $exceptionsDir
+     * @param  bool  $anonymousWay
+     * @return void|array
+     */
 	protected function createMapping(array $rules, array $exceptions, $rulesDir, $exceptionsDir, $anonymousWay = true )
 	{	
 		$maps = [];
@@ -96,6 +117,16 @@ class AjdRespectServiceProvider extends Validation_provider
 		return $maps;
 	}
 
+	/**
+     * Registers all respect validation rules as anonymous class for ajd validation.
+     *
+     * @param  string  $ruleName
+     * @param  string  $ruleClass
+     * @param  string  $exceptionClass
+     * @param  string  $rulesDir
+     * @param  string  $exceptionsDir
+     * @return void
+     */
 	public function registerRespect($ruleName, $ruleClass, $exceptionClass, $rulesDir, $exceptionsDir)
 	{
 		if(!AJD_validation::hasAnonymousClass($ruleName))
@@ -104,8 +135,7 @@ class AjdRespectServiceProvider extends Validation_provider
 
 			$anonClassRule = new class($ruleClass, $that, $rulesDir) extends Abstract_anonymous_rule
 			{
-
-				protected $ruleClass;
+				public $ruleClass;
 				protected static $exceptionClass;
 				protected $mainObject;
 				protected $rulesDir;
@@ -120,7 +150,14 @@ class AjdRespectServiceProvider extends Validation_provider
 
 				public function __invoke($value, $satisfier = null, $field = null, $clean_field = null, $origValue = null, $inverse = false)
 				{	
-					
+					if(isset($satisfier[0]))
+					{
+						if(is_array($satisfier[0]))
+						{
+							$satisfier = $satisfier[0];
+						}
+					}
+
 					$obj = $this->processRespect($this->ruleClass, $satisfier, $inverse);
 
 					if(empty($obj))
@@ -135,6 +172,14 @@ class AjdRespectServiceProvider extends Validation_provider
 						$defaultMessage = 'Repect Rule '.$this->ruleClass.' inverse error.';						
 					}
 
+					if(!is_null($this->inverseCheck))
+					{
+						if($this->inverseCheck === true)
+						{
+							$inverse = true;
+						}
+					}
+
 					try
 					{
 						$realObj = $obj;
@@ -146,7 +191,14 @@ class AjdRespectServiceProvider extends Validation_provider
 							$realObj = $v->not($obj);
 						}
 
-						$realObj->setName($clean_field)->assert($value);
+						$realField = !empty($clean_field) ? $clean_field : $field;
+
+						if(!empty($realField))
+						{
+							$realObj->setName($realField);
+						}
+
+						$realObj->assert($value);
 
 					}
 					catch(\Respect\Validation\Exceptions\NestedValidationException $e)
@@ -206,7 +258,6 @@ class AjdRespectServiceProvider extends Validation_provider
 
 				public static function getAnonExceptionMessage(Abstract_exceptions $exceptionObj, $anon = null)
 				{
-					
 					$defaultMessage = 'Repect Rule '.$anon->ruleClass.' error.';
 					$inverseMessage = 'Repect Rule '.$anon->ruleClass.' inverse error.';
 
