@@ -39,7 +39,15 @@ class AjdRespectServiceProvider extends Validation_provider
      */
 	protected function tryGetRespectRules()
 	{
-		$baseRepectDir = dirname(__DIR__).self::DS.'vendor'.self::DS.'respect'.self::DS.'validation'.self::DS.'library'.self::DS;
+		$dir = self::DS.'vendor'.self::DS.'respect'.self::DS.'validation'.self::DS.'library'.self::DS;
+		$baseRepectDir = dirname(__DIR__).$dir;
+
+		if(!is_dir($baseRepectDir))
+		{
+			$basedirname = dirname(dirname(dirname(dirname(__DIR__))));
+			$baseRepectDir = $basedirname.$dir;
+		}
+
 		$rulesDir = $baseRepectDir.'Rules';
 		$exceptionsDir = $baseRepectDir.'Exceptions';
 
