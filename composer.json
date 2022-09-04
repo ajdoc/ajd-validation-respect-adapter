@@ -1,0 +1,27 @@
+{
+    "name": "ajd/ajd-validation-respect-adapter",
+    "description": "AJD validation respect validation rules adpater",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Aj Doc",
+            "email": "thedoctorisin17@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AjdRespect\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.3",
+        "respect/validation": "dev-master"
+    },
+    "prefer-stable": true,
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist"
+    }
+}
