@@ -9,9 +9,9 @@ Respect Validation adapter for AJD validation so that you could use repect valid
 ## Getting Started
 
 ### Installing
-* composer require ajd/ajd-validation-respect-adapter
-* after installing add the package to AJD validation by
-* adding package is usally done in the bootsraping of your application
+* `composer require ajd/ajd-validation-respect-adapter`
+
+* after installing add the package to AJD validation as shown by the example below
 ```php
 use AJD_validation\AJD_validation;
 
@@ -19,6 +19,7 @@ $v->addPackages([
 	AjdRespect\AjdRespectServiceProvider::class
 ]);
 ```
+* adding package is usally done in the bootsraping of your application
 
 ## Documentation
 
